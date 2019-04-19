@@ -15,7 +15,7 @@ RUN  sed -i 's/dl-cdn.alpinelinux.org/mirrors.ustc.edu.cn/g' /etc/apk/repositori
   && pip install --upgrade pip pylint setuptools \
   && apk del .build-deps-py
 
-ARG LATEST
+ARG LATEST=3.3.0.1492-linux
 # https://docs.sonarqube.org/display/SCAN/Analyzing+with+SonarQube+Scanner
 # Example: https://binaries.sonarsource.com/Distribution/sonar-scanner-cli/sonar-scanner-cli-3.3.0.1492-linux.zip
 # Run: docker build -t sonarscanner --build-arg LATEST=3.3.0.1492-linux .
