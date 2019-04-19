@@ -21,7 +21,7 @@ ARG LATEST
 # Run: docker build -t sonarscanner --build-arg LATEST=3.3.0.1492-linux .
 
 # You may already downloaded the scanner package
-COPY sonar-scanner-cli-$LATEST.zip /root/
+COPY ./* /root/
 
 RUN env \
   && if [ ! -f /root/sonar-scanner-cli-$LATEST.zip ]; then wget -c -t 0 https://binaries.sonarsource.com/Distribution/sonar-scanner-cli/sonar-scanner-cli-$LATEST.zip; fi \
