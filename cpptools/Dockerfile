@@ -11,8 +11,8 @@ ARG MIRROR=deb.debian.org
 
 RUN if [ "$MIRROR" != "deb.debian.org" ]; then sed -i 's/deb.debian.org/'$MIRROR'/g' /etc/apt/sources.list; fi \
 	&& apt-get update && apt-get install -y valgrind libssl-dev g++ make \
-	&& git clone https://github.com/danmar/cppcheck.git \
-	&& cd cppcheck \
+	&& wget -c -t 0 -O cppcheck-master.zip https://github.com/danmar/cppcheck/archive/master.zip \
+	&& unzip -a cppcheck-master.zip && cd cppcheck-master \
 	&& make install CFGDIR=/cfg HAVE_RULES=yes CXXFLAGS="-O2 -DNDEBUG --static" -j `getconf _NPROCESSORS_ONLN` \
-	&& strip /usr/bin/cppcheck \
+	&& strip /usr/bin/cppcheck && cd /root && rm -rf /root/cppcheck-master* \
 	&& apt-get autoremove && apt-get autoclean
