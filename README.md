@@ -1,4 +1,4 @@
-## Use a sonarqube scanner with docker
+## Use sonarqube scanner with docker and support C++
 
 Inspired from https://hub.docker.com/r/zaquestion/sonarqube-scanner
 
@@ -38,7 +38,33 @@ sonar.sourceEncoding=UTF-8
 
 # Work with the dockerized Sonarqube
 sonar.host.url=http://sonarqube:9000
+
 ```
+
+Execute scan under your project:
+```
+docker run --name sonarscan -it --network sonar_sonarnet -v $(pwd):/root/src tangramor/sonarscanner && docker rm sonarscan
+```
+
+
+### For C++ project
+
+```
+docker run --name compile -v $(pwd):/root tangramor/cpptools g++ -std=c++11 -lcrypto Test.cpp -o test && docker rm compile
+
+docker run --name valgrind -v $(pwd):/root tangramor/cpptools valgrind --xml=yes --xml-file=valgrind_report.xml ./gmtendecrypt && docker rm valgrind
+
+docker run --name cppcheck -v $(pwd):/root tangramor/cpptools cppcheck . --enable=all -v --xml 2> cppcheck_report.xml && docker rm cppcheck
+```
+
+Add related report path in `sonar-project.properties`:
+
+```
+sonar.language=c++
+sonar.cxx.cppcheck.reportPath=./cppcheck_report.xml
+sonar.cxx.valgrind.reportPath=./valgrind_report.xml
+```
+
 
 Execute scan under your project:
 ```
