@@ -3,10 +3,12 @@ FROM openjdk:8-jre-alpine
 WORKDIR /root
 
 ENV SONAR_RUNNER_HOME=/root/sonar_home
-ENV PATH ${SONAR_RUNNER_HOME}/bin:$PATH
+ENV PATH=${SONAR_RUNNER_HOME}/bin:$PATH
 ENV JAVA_HOME=/usr/lib/jvm/java-1.8-openjdk/jre
 
-RUN  sed -i 's/dl-cdn.alpinelinux.org/mirrors.ustc.edu.cn/g' /etc/apk/repositories \
+ENV APKMIRROR=mirrors.ustc.edu.cn
+
+RUN  sed -i 's/dl-cdn.alpinelinux.org/$APKMIRROR/g' /etc/apk/repositories \
   && apk update && apk add --no-cache curl git python3 nodejs openssl unzip \
   && update-ca-certificates \
   && curl https://bootstrap.pypa.io/get-pip.py -o get-pip.py \
@@ -20,7 +22,7 @@ ARG LATEST=3.3.0.1492-linux
 # Example: https://binaries.sonarsource.com/Distribution/sonar-scanner-cli/sonar-scanner-cli-3.3.0.1492-linux.zip
 # Run: docker build -t sonarscanner --build-arg LATEST=3.3.0.1492-linux .
 
-# You may already downloaded the scanner package
+# You may already downloaded the scanner package and placed it in current folder
 COPY ./* /root/
 
 RUN env \

@@ -10,29 +10,34 @@ You can save the zip file in the same directory of the Dockerfile, or you can ju
 
 Build image:
 ```
-docker build -t sonarscanner --build-arg LATEST=3.3.0.1492-linux .
+docker build -t tangramor/sonarscanner --build-arg LATEST=3.3.0.1492-linux .
 ```
 
-Exmaple `sonar-project.properties` in your project:
+Exmaple `sonar-project.properties` in your project, here we assume that you have a sonarqube instance started using [docker-compose](https://github.com/SonarSource/docker-sonarqube/blob/master/recipes/docker-compose-postgres-example.yml):
 ```
 # Required metadata
-sonar.projectKey=org.sonarqube:python-sonar-scanner
-sonar.projectName=Python :: PYTHON! : SonarQube Scanner
+sonar.projectKey=my-sonar-test
+sonar.projectName=Java :: My Test Project
 sonar.projectVersion=1.0
+sonar.login=07ec1d40680ba21388a46185f3e217c7a36add11
 
 # Comma-separated paths to directories with sources (required)
-sonar.sources=<SRC>
+sonar.sources=.
 
 # Language
-sonar.language=py
+sonar.language=java
+
+# Where to find compiled binaries
+sonar.java.binaries=./Java/bin
 
 # Encoding of the source files
 sonar.sourceEncoding=UTF-8
 
-sonar.host.url=http://172.17.0.5:9000
+# Work with the dockerized Sonarqube
+sonar.host.url=http://sonarqube:9000
 ```
 
 Execute scan under your project:
 ```
-docker run --name sonarscan -it -v $(pwd):/root/src sonarscanner && docker rm sonarscan
+docker run --name sonarscan -it --network sonar_sonarnet -v $(pwd):/root/src tangramor/sonarscanner && docker rm sonarscan
 ```
