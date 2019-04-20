@@ -7,9 +7,9 @@ ENV PATH=${SONAR_RUNNER_HOME}/bin:$PATH
 ENV JAVA_HOME=/usr/lib/jvm/java-1.8-openjdk/jre
 
 # China mirror: mirrors.ustc.edu.cn
-ENV APKMIRROR=dl-cdn.alpinelinux.org
+ARG APKMIRROR=dl-cdn.alpinelinux.org
 
-RUN if [ "$APKMIRROR" -ne "dl-cdn.alpinelinux.org" ]; then sed -i 's/dl-cdn.alpinelinux.org/'$APKMIRROR'/g' /etc/apk/repositories; fi \
+RUN if [ "$APKMIRROR" != "dl-cdn.alpinelinux.org" ]; then sed -i 's/dl-cdn.alpinelinux.org/'$APKMIRROR'/g' /etc/apk/repositories; fi \
   && apk update && apk add --no-cache curl git python3 nodejs openssl unzip \
   && update-ca-certificates \
   && curl https://bootstrap.pypa.io/get-pip.py -o get-pip.py \
