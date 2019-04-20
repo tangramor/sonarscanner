@@ -8,7 +8,7 @@ ENV JAVA_HOME=/usr/lib/jvm/java-1.8-openjdk/jre
 
 ENV APKMIRROR=mirrors.ustc.edu.cn
 
-RUN  sed -i 's/dl-cdn.alpinelinux.org/$APKMIRROR/g' /etc/apk/repositories \
+RUN  sed -i 's/dl-cdn.alpinelinux.org/'$APKMIRROR'/g' /etc/apk/repositories \
   && apk update && apk add --no-cache curl git python3 nodejs openssl unzip \
   && update-ca-certificates \
   && curl https://bootstrap.pypa.io/get-pip.py -o get-pip.py \
