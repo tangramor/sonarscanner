@@ -32,3 +32,4 @@ RUN env \
   && sed -i 's/use_embedded_jre=true/JAVA_HOME=$JAVA_HOME\nuse_embedded_jre=false/g' /root/sonar_home/bin/sonar-scanner
 
 CMD sonar-scanner -Dsonar.projectBaseDir=./src
+

@@ -5,12 +5,15 @@ Inspired from https://hub.docker.com/r/zaquestion/sonarqube-scanner
 It does not contain nodejs, so build our own scanner docker image.
 
 Get latest scanner from https://docs.sonarqube.org/display/SCAN/Analyzing+with+SonarQube+Scanner
+
 For example: https://binaries.sonarsource.com/Distribution/sonar-scanner-cli/sonar-scanner-cli-3.3.0.1492-linux.zip
+
 You can save the zip file in the same directory of the Dockerfile, or you can just give the `LATEST` value.
 
-Build image:
+
+**Build image** (here we input 2 args, one for sonar scanner version, one for alpine mirror):
 ```
-docker build -t tangramor/sonarscanner --build-arg LATEST=3.3.0.1492-linux .
+docker build -t tangramor/sonarscanner --build-arg LATEST=3.3.0.1492-linux --build-arg APKMIRROR=mirrors.ustc.edu.cn .
 ```
 
 Exmaple `sonar-project.properties` in your project, here we assume that you have a sonarqube instance started using [docker-compose](https://github.com/SonarSource/docker-sonarqube/blob/master/recipes/docker-compose-postgres-example.yml):
@@ -41,3 +44,5 @@ Execute scan under your project:
 ```
 docker run --name sonarscan -it --network sonar_sonarnet -v $(pwd):/root/src tangramor/sonarscanner && docker rm sonarscan
 ```
+
+
