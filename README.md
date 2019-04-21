@@ -52,7 +52,7 @@ docker run --name sonarscan -it --network sonar_sonarnet -v $(pwd):/root/src tan
 ```
 docker run --name compile -v $(pwd):/root tangramor/cpptools g++ -std=c++11 -lcrypto Test.cpp -o test && docker rm compile
 
-docker run --name valgrind -v $(pwd):/root tangramor/cpptools valgrind --xml=yes --xml-file=valgrind_report.xml ./gmtendecrypt && docker rm valgrind
+docker run --name valgrind -v $(pwd):/root tangramor/cpptools valgrind --xml=yes --xml-file=valgrind_report.xml ./test && docker rm valgrind
 
 docker run --name cppcheck -v $(pwd):/root tangramor/cpptools cppcheck . --enable=all -v --xml 2> cppcheck_report.xml && docker rm cppcheck
 ```
