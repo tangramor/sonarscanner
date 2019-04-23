@@ -55,7 +55,22 @@ docker run --name compile -v $(pwd):/root tangramor/cpptools g++ -std=c++11 -lcr
 docker run --name valgrind -v $(pwd):/root tangramor/cpptools valgrind --xml=yes --xml-file=valgrind_report.xml ./test && docker rm valgrind
 
 docker run --name cppcheck -v $(pwd):/root tangramor/cpptools cppcheck . --enable=all -v --xml 2> cppcheck_report.xml && docker rm cppcheck
+
+docker run --name vera -v $(pwd):/root tangramor/cpptools vera++ -s -c vera_report.xml ./Test.cpp && docker rm vera
 ```
+
+Please be aware that vera++ command above can only scan 1 source code file one time. You may use the shell scripts in the docker image, which will find out all the C++/C files/headers and scan them:
+
+```
+docker run --name valgrind -v $(pwd):/root tangramor/cpptools valgrind.sh ./test && docker rm valgrind
+
+docker run --name cppcheck -v $(pwd):/root tangramor/cpptools cppcheck.sh && docker rm cppcheck
+
+docker run --name vera -v $(pwd):/root tangramor/cpptools vera.sh && docker rm vera
+```
+
+[vera++ usage](https://bitbucket.org/verateam/vera/wiki/Running)
+
 
 Add related report path in `sonar-project.properties`:
 
@@ -63,6 +78,7 @@ Add related report path in `sonar-project.properties`:
 sonar.language=c++
 sonar.cxx.cppcheck.reportPath=./cppcheck_report.xml
 sonar.cxx.valgrind.reportPath=./valgrind_report.xml
+sonar.cxx.vera.reportPath=./vera_report.xml
 ```
 
 
