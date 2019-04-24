@@ -7,7 +7,7 @@ It does not contain nodejs, so I build my own scanner docker image.
 
 ### Usage
 
-You can create a sonarqube instance by [docker-compose](https://github.com/SonarSource/docker-sonarqube/blob/master/recipes/docker-compose-postgres-example.yml).
+You can create a sonarqube instance by [docker-compose](https://github.com/SonarSource/docker-sonarqube/blob/master/recipes/docker-compose-postgres-example.yml). To support C++/C, you need to install [sonar-cxx](https://github.com/SonarOpenCommunity/sonar-cxx) (To support Sonarqube 7.7, download 1.3.0 [here](https://ci.appveyor.com/project/SonarOpenCommunity/sonar-cxx/builds/23281379/artifacts)).
 
 Add a `sonar-project.properties` in your project, following is an example for Java.
 ```
