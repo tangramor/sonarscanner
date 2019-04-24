@@ -58,19 +58,21 @@ docker build -t tangramor/sonarscanner --build-arg LATEST=3.3.0.1492-linux --bui
 
 The community editon Sonarqube does NOT support C++/C scan, you need to buy the commercial license. It is lucky that there are some great people created [sonar-cxx](https://github.com/SonarOpenCommunity/sonar-cxx) as free software. However, it needs some external C++/C tools to generate reports.
 
-Following commands use docker image `tangramor/cpptools` to compile C++ program, and scan it with `valgrind`, `cppcheck` and `vera++`, and export XML reports which can be imported into sonarqube:
+Following commands use docker image `tangramor/cpptools` to compile C++ program, and scan it with `valgrind` ([valgrind usage](http://valgrind.org/docs/manual/manual.html)), `cppcheck` ([cppcheck usage](http://cppcheck.sourceforge.net/manual.html)) and `vera++` ([vera++ usage](https://bitbucket.org/verateam/vera/wiki/Running)), and check coverage with `gcovr` ([gcovr usage](https://www.gcovr.com/en/stable/guide.html)), and generate XML reports which can be imported into sonarqube:
 
 ```
-docker run --name compile -v $(pwd):/root tangramor/cpptools g++ -std=c++11 -lcrypto Test.cpp -o test && docker rm compile
+docker run --name compile -v $(pwd):/root tangramor/cpptools g++ -std=c++11 -lcrypto -fprofile-arcs -ftest-coverage -fPIC -O0 Test.cpp -o test && docker rm compile
 
 docker run --name valgrind -v $(pwd):/root tangramor/cpptools valgrind --xml=yes --xml-file=valgrind_report.xml ./test && docker rm valgrind
 
 docker run --name cppcheck -v $(pwd):/root tangramor/cpptools cppcheck . --enable=all -v --xml 2> cppcheck_report.xml && docker rm cppcheck
 
 docker run --name vera -v $(pwd):/root tangramor/cpptools vera++ -s -c vera_report.xml ./Test.cpp && docker rm vera
+
+docker run --name gcovr -v $(pwd):/root tangramor/cpptools gcovr -r . -x > gcovr_report.xml && docker rm gcovr
 ```
 
-Please be aware that vera++ command ([vera++ usage](https://bitbucket.org/verateam/vera/wiki/Running)) above can only scan 1 source code file one time. You may use the shell scripts I placed in the docker image, which will find out all the C++/C files/headers and scan them:
+Please be aware that vera++ command above can only scan 1 source code file one time. You may use the shell scripts I placed in the docker image, which will find out all the C++/C files/headers and scan them:
 
 ```
 docker run --name valgrind -v $(pwd):/root tangramor/cpptools valgrind.sh ./test && docker rm valgrind
@@ -78,6 +80,8 @@ docker run --name valgrind -v $(pwd):/root tangramor/cpptools valgrind.sh ./test
 docker run --name cppcheck -v $(pwd):/root tangramor/cpptools cppcheck.sh && docker rm cppcheck
 
 docker run --name vera -v $(pwd):/root tangramor/cpptools vera.sh && docker rm vera
+
+docker run --name gcovr -v $(pwd):/root tangramor/cpptools gcovr.sh && docker rm gcovr
 ```
 
 Add related report path in `sonar-project.properties`:
@@ -87,6 +91,7 @@ sonar.language=c++
 sonar.cxx.cppcheck.reportPath=./cppcheck_report.xml
 sonar.cxx.valgrind.reportPath=./valgrind_report.xml
 sonar.cxx.vera.reportPath=./vera_report.xml
+sonar.cxx.coverage.reportPath=./gcovr_report.xml
 ```
 
 
