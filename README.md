@@ -61,8 +61,9 @@ The community editon Sonarqube does NOT support C++/C scan, you need to buy the 
 Following commands use docker image `tangramor/cpptools` to compile C++ program, and scan it with `valgrind` ([valgrind usage](http://valgrind.org/docs/manual/manual.html)), `cppcheck` ([cppcheck usage](http://cppcheck.sourceforge.net/manual.html)) and `vera++` ([vera++ usage](https://bitbucket.org/verateam/vera/wiki/Running)), and check coverage with `gcovr` ([gcovr usage](https://www.gcovr.com/en/stable/guide.html)), and generate XML reports which can be imported into sonarqube:
 
 ```
+# -fdiagnostics-show-option is needed to generate build log
 # -fprofile-arcs -ftest-coverage -fPIC is needed by gcovr
-docker run --name compile -v $(pwd):/root tangramor/cpptools g++ -std=c++11 -lcrypto -fprofile-arcs -ftest-coverage -fPIC -O0 Test.cpp -o test && docker rm compile
+docker run --name compile -v $(pwd):/root tangramor/cpptools g++ -std=c++11 -Wall -fdiagnostics-show-option -lcrypto -fprofile-arcs -ftest-coverage -fPIC -O0 Test.cpp -o test > build.log 2>&1 && docker rm compile
 
 # This step will execute the compiled program and generate .gcda file needed by gcovr
 docker run --name valgrind -v $(pwd):/root tangramor/cpptools valgrind --xml=yes --xml-file=valgrind_report.xml ./test && docker rm valgrind
@@ -90,6 +91,11 @@ Add related report path in `sonar-project.properties`:
 
 ```
 sonar.language=c++
+
+sonar.cxx.gcc.reportPath=*.log
+sonar.cxx.gcc.charset=UTF-8
+sonar.cxx.gcc.regex=(?<file>.*):(?<line>[0-9]+):[0-9]+:\\x20warning:\\x20(?<message>.*)\\x20\\[(?<id>.*)\\]
+
 sonar.cxx.cppcheck.reportPath=./cppcheck_report.xml
 sonar.cxx.valgrind.reportPath=./valgrind_report.xml
 sonar.cxx.vera.reportPath=./vera_report.xml
