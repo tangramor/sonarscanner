@@ -92,7 +92,7 @@ sonar.cxx.vera.reportPath=./vera_report.xml
 
 Execute scan under your project:
 ```
-docker run --name sonarscan -it --network sonar_sonarnet -v $(pwd):/root/src tangramor/sonarscanner && docker rm sonarscan
+docker run --name sonarscan -it --network sonarqube_sonarnet -v $(pwd):/root/src tangramor/sonarscanner && docker rm sonarscan
 ```
 
 
