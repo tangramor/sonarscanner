@@ -20,4 +20,5 @@ RUN if [ "$MIRROR" != "deb.debian.org" ]; then sed -i 's/deb.debian.org/'$MIRROR
 
 COPY ./*.sh /usr/local/bin/
 
+# To debug inside the container
 CMD ["tail", "-f", "/dev/null"]
