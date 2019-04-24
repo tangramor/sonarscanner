@@ -18,7 +18,7 @@ RUN if [ "$MIRROR" != "deb.debian.org" ]; then sed -i 's/deb.debian.org/'$MIRROR
 	&& cd /root && rm -rf /root/vera* \
 	&& apt-get autoremove && apt-get autoclean
 
-COPY ./*.sh /usr/local/bin/
+COPY *.sh /usr/local/bin/
 
 # To debug inside the container
 CMD ["tail", "-f", "/dev/null"]
