@@ -31,5 +31,8 @@ RUN env \
   && mkdir sonar_home && unzip -a sonar-scanner-cli-$LATEST.zip && mv sonar-scanner*/* sonar_home/ && rm -rf sonar-scanner-cli-$LATEST.zip \
   && sed -i 's/use_embedded_jre=true/JAVA_HOME=$JAVA_HOME\nuse_embedded_jre=false/g' /root/sonar_home/bin/sonar-scanner
 
-CMD sonar-scanner -Dsonar.projectBaseDir=./src
+# The maximum memory allocation for JVM
+ENV JAVA_XMX=2048m
+
+CMD sonar-scanner -Xmx$JAVA_XMX -Dsonar.projectBaseDir=./src
 
