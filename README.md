@@ -2,12 +2,19 @@
 
 Inspired from https://hub.docker.com/r/zaquestion/sonarqube-scanner
 
-It does not contain nodejs, so I build my own scanner docker image.
+It does not contain nodejs, so I build my own scanner docker image: [tangramor/sonarscanner](https://hub.docker.com/r/tangramor/sonarscanner).
+
+And to support C++/C, I build another docker image to provide some open source tools: [tangramor/cpptools](https://hub.docker.com/r/tangramor/cpptools).
 
 
-### Usage
+### Scanner Usage
 
 You can create a sonarqube instance by [docker-compose](https://github.com/SonarSource/docker-sonarqube/blob/master/recipes/docker-compose-postgres-example.yml). To support C++/C, you need to install [sonar-cxx](https://github.com/SonarOpenCommunity/sonar-cxx) (To support Sonarqube 7.7, download 1.3.0 [here](https://ci.appveyor.com/project/SonarOpenCommunity/sonar-cxx/builds/23281379/artifacts)).
+
+To support large project which has many source code files, you may need to tunning `/opt/sonarqube/conf/sonar.properties` and increase the memory allocation for Compute Engine (default 512m):
+```
+sonar.ce.javaOpts=-Xmx1024m -Xms128m -XX:+HeapDumpOnOutOfMemoryError
+```
 
 Add a `sonar-project.properties` in your project, following is an example for Java.
 ```
@@ -36,11 +43,18 @@ sonar.host.url=http://sonarqube:9000
 
 Execute scan under your project:
 ```
-docker run --name sonarscan -it --network sonarqube_sonarnet -v $(pwd):/root/src tangramor/sonarscanner && docker rm sonarscan
+docker run --name sonarscan -it -e JAVA_Xmx=3062m --network sonarqube_sonarnet -v $(pwd):/root/src tangramor/sonarscanner && docker rm sonarscan
 ```
 
+There are some environment parameters which can be passed in with `-e`, before set them, make sure you have enough memory:
 
-### Build image
+* `JAVA_Xmx`: default value is 2048m
+* `JAVA_MaxPermSize`: default value is 512m
+* `JAVA_ReservedCodeCacheSize`: default value is 128m
+* `SONAR_SCANNER_OPTS`: this parameter combine the above 3 paramters to 1 (default value: `"-Xmx2048m -XX:MaxPermSize=512m -XX:ReservedCodeCacheSize=128m"`), you can set it alone without above parameters like this: `"-Xmx3062m -XX:MaxPermSize=1024m -XX:ReservedCodeCacheSize=128m"`
+
+
+### Build Scanner Image
 
 You can find the latest scanner from https://docs.sonarqube.org/display/SCAN/Analyzing+with+SonarQube+Scanner
 
@@ -54,7 +68,7 @@ docker build -t tangramor/sonarscanner --build-arg LATEST=3.3.0.1492-linux --bui
 ```
 
 
-### For C++ project
+### For C++ Project
 
 The community editon Sonarqube does NOT support C++/C scan, you need to buy the commercial license. It is lucky that there are some great people created [sonar-cxx](https://github.com/SonarOpenCommunity/sonar-cxx) as free software. However, it needs some external C++/C tools to generate reports.
 
@@ -105,7 +119,7 @@ sonar.cxx.coverage.reportPath=./gcovr_report.xml
 
 Execute scan under your project:
 ```
-docker run --name sonarscan -it --network sonarqube_sonarnet -v $(pwd):/root/src tangramor/sonarscanner && docker rm sonarscan
+docker run --name sonarscan -it -e JAVA_Xmx=3062m --network sonarqube_sonarnet -v $(pwd):/root/src tangramor/sonarscanner && docker rm sonarscan
 ```
 
 

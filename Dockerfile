@@ -29,10 +29,15 @@ COPY ./* /root/
 RUN env \
   && if [ ! -f /root/sonar-scanner-cli-$LATEST.zip ]; then wget -c -t 0 https://binaries.sonarsource.com/Distribution/sonar-scanner-cli/sonar-scanner-cli-$LATEST.zip; fi \
   && mkdir sonar_home && unzip -a sonar-scanner-cli-$LATEST.zip && mv sonar-scanner*/* sonar_home/ && rm -rf sonar-scanner-cli-$LATEST.zip \
-  && sed -i 's/use_embedded_jre=true/JAVA_HOME=$JAVA_HOME\nuse_embedded_jre=false/g' /root/sonar_home/bin/sonar-scanner
+  && sed -i 's/use_embedded_jre=true/echo "SONAR_SCANNER_OPTS: $SONAR_SCANNER_OPTS"\nJAVA_HOME=$JAVA_HOME\nuse_embedded_jre=false\n/g' /root/sonar_home/bin/sonar-scanner
 
 # The maximum memory allocation for JVM
-ENV JAVA_XMX=2048m
+ENV JAVA_Xmx=2048m
+ENV JAVA_MaxPermSize=512m
+ENV JAVA_ReservedCodeCacheSize=128m
 
-CMD sonar-scanner -Xmx$JAVA_XMX -Dsonar.projectBaseDir=./src
+# ENV SONAR_SCANNER_OPTS="-Xmx3062m -XX:MaxPermSize=512m -XX:ReservedCodeCacheSize=128m"
+ENV SONAR_SCANNER_OPTS="-Xmx$JAVA_Xmx -XX:MaxPermSize=$JAVA_MaxPermSize -XX:ReservedCodeCacheSize=$JAVA_ReservedCodeCacheSize"
+
+CMD sonar-scanner -Dsonar.projectBaseDir=./src
 

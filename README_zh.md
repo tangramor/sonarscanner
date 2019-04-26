@@ -2,10 +2,19 @@
 
 受 https://hub.docker.com/r/zaquestion/sonarqube-scanner 启发，因为该容器不包含 nodejs，在扫描时会有缺陷，故自己做了一个镜像。
 
+扫描器镜像：[tangramor/sonarscanner](https://hub.docker.com/r/tangramor/sonarscanner)。
+
+为了支持 C++/C，我构建了一个提供各种相关开源工具的镜像：[tangramor/cpptools](https://hub.docker.com/r/tangramor/cpptools).
+
 
 ### 使用方法
 
 可以使用 [docker-compose](https://github.com/SonarSource/docker-sonarqube/blob/master/recipes/docker-compose-postgres-example.yml) 来启动一个 sonarqube 实例，当然也可以自己搭建。要支持 C++/C，需要安装 [sonar-cxx](https://github.com/SonarOpenCommunity/sonar-cxx) (要支持 Sonarqube 7.7，需下载 [1.3.0 版本](https://ci.appveyor.com/project/SonarOpenCommunity/sonar-cxx/builds/23281379/artifacts)) 插件。
+
+为了支持包含很多源码文件的大项目，你可能需要对配置文件 `/opt/sonarqube/conf/sonar.properties` 进行微调，增加计算引擎的可使用内存（缺省512M）：
+```
+sonar.ce.javaOpts=-Xmx1024m -Xms128m -XX:+HeapDumpOnOutOfMemoryError
+```
 
 在你要扫描的项目根目录添加 `sonar-project.properties` 文件。下面是一个 Java 的例子：
 ```
@@ -34,8 +43,15 @@ sonar.host.url=http://sonarqube:9000
 
 然后在你要扫描的项目根目录下运行扫描：
 ```
-docker run --name sonarscan -it --network sonarqube_sonarnet -v $(pwd):/root/src tangramor/sonarscanner && docker rm sonarscan
+docker run --name sonarscan -it -e JAVA_Xmx=3062m --network sonarqube_sonarnet -v $(pwd):/root/src tangramor/sonarscanner && docker rm sonarscan
 ```
+
+在运行时可以使用 `-e` 传入一些环境变量以修改 JVM 的内存设置，当然在修改前需要确保你有足够的内存：
+
+* `JAVA_Xmx`: 缺省值 2048m
+* `JAVA_MaxPermSize`: 缺省值 512m
+* `JAVA_ReservedCodeCacheSize`: 缺省值 128m
+* `SONAR_SCANNER_OPTS`: 这个环境变量把前面3个参数合并为真正输入给扫描器的参数 (缺省值： `"-Xmx2048m -XX:MaxPermSize=512m -XX:ReservedCodeCacheSize=128m"`)，你也可以不设置前面3个，对这个进行单独设置，例如：`"-Xmx3062m -XX:MaxPermSize=1024m -XX:ReservedCodeCacheSize=128m"`。
 
 
 ### 构建自己的扫描器 docker 镜像
@@ -103,7 +119,7 @@ sonar.cxx.coverage.reportPath=./gcovr_report.xml
 
 然后在你的项目根目录下执行扫描：
 ```
-docker run --name sonarscan -it --network sonarqube_sonarnet -v $(pwd):/root/src tangramor/sonarscanner && docker rm sonarscan
+docker run --name sonarscan -it -e JAVA_Xmx=3062m --network sonarqube_sonarnet -v $(pwd):/root/src tangramor/sonarscanner && docker rm sonarscan
 ```
 
 
