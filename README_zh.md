@@ -43,15 +43,14 @@ sonar.host.url=http://sonarqube:9000
 
 然后在你要扫描的项目根目录下运行扫描：
 ```
-docker run --name sonarscan -it -e JAVA_Xmx=3062m --network sonarqube_sonarnet -v $(pwd):/root/src tangramor/sonarscanner && docker rm sonarscan
+docker run --name sonarscan --rm -e JAVA_Xmx=3062m -v $(pwd):/root/src tangramor/sonarscanner
 ```
 
 在运行时可以使用 `-e` 传入一些环境变量以修改 JVM 的内存设置，当然在修改前需要确保你有足够的内存：
 
 * `JAVA_Xmx`: 缺省值 2048m
-* `JAVA_MaxPermSize`: 缺省值 512m
 * `JAVA_ReservedCodeCacheSize`: 缺省值 128m
-* `SONAR_SCANNER_OPTS`: 这个环境变量把前面3个参数合并为真正输入给扫描器的参数 (缺省值： `"-Xmx2048m -XX:MaxPermSize=512m -XX:ReservedCodeCacheSize=128m"`)，你也可以不设置前面3个，对这个进行单独设置，例如：`"-Xmx3062m -XX:MaxPermSize=1024m -XX:ReservedCodeCacheSize=128m"`。
+* `SONAR_SCANNER_OPTS`: 这个环境变量把前面2个参数合并为真正输入给扫描器的参数 (缺省值： `"-Xmx2048m -XX:ReservedCodeCacheSize=128m"`)，你也可以不设置前面2个，对这个进行单独设置，例如：`"-Xmx3062m -XX:ReservedCodeCacheSize=128m"`。
 
 
 ### 构建自己的扫描器 docker 镜像

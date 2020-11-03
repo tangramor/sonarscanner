@@ -19,7 +19,7 @@ RUN if [ "$DEBIANMIRROR" != "cdn-fastly.deb.debian.org" ]; then sed -i 's/deb.de
         libgssapi-krb5-2 \
         libintl-perl \
         libssl1.0 \
-         libstdc++-arm-none-eabi-newlib \
+        libstdc++-arm-none-eabi-newlib \
         liblttng-ust-java \
         tzdata \
         liburcu6 \
